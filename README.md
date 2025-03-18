@@ -1,0 +1,1 @@
+Implementacja klasycznego algorytmu genetycznego 
