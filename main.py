@@ -9,18 +9,9 @@ from PyQt6.QtWidgets import (
 )
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 
-def genetic_algorithm(pop_size, epochs, selection_method):
-    history = []
-    best_solution = None
-    np.random.seed(42)
+from genetic_alforithm import genetic_algorithm
 
-    for epoch in range(epochs):
-        best_value = np.random.rand()
-        history.append(best_value)
-        best_solution = best_value 
-        time.sleep(0.1)
 
-    return history, best_solution
 
 class GeneticApp(QMainWindow):
     def __init__(self):

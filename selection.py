@@ -1,0 +1,1 @@
+#  Implementacja metod selekcji

@@ -1,0 +1,1 @@
+# reprezentacja chromosomu
