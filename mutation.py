@@ -1,1 +1,0 @@
-# Implementacja mutacji
