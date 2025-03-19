@@ -27,8 +27,7 @@ class GeneticAlgorithm:
         self.population = self.initialize_population()
 
     def initialize_population(self):
-        """Tworzy początkową populację w postaci losowych chromosomów."""
-        return np.random.randint(2, size=(self.population_size, 10))  # Przykładowa binarna populacja
+        return np.random.randint(2, size=(self.population_size, 10)) 
 
     def evaluate_population(self, function):
         return np.array([function(ind) for ind in self.population])
