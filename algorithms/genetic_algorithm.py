@@ -72,7 +72,7 @@ class GeneticAlgorithm:
     def evolve(self, function):
         for generation in range(self.num_generations):
             fitness_scores = self.evaluate_population()
-            self.best_values.append(np.max(fitness_scores))  # Store the best value of each generation (max)
+            self.best_values.append(np.max(fitness_scores))  
             parents = self.select_parents(fitness_scores)
             offspring = self.crossover(parents)
             mutated_offspring = self.mutate(offspring)
