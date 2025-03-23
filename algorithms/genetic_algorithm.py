@@ -1,4 +1,5 @@
 import numpy as np
+import time
 from algorithms.selection import roulette_selection, tournament_selection
 from algorithms.crossover import one_point_crossover, two_point_crossover, uniform_crossover
 from algorithms.mutation import bit_flip_mutation, boundary_mutation
@@ -40,8 +41,9 @@ class GeneticAlgorithm:
     def initialize_population(self):
         return np.random.randint(2, size=(self.population_size, self.num_variables))
 
-    def evaluate_population(self):
-        return np.array([self.fitness(ind) for ind in self.population])
+    def evaluate_population(self, function):
+        # return np.array([self.fitness(ind) for ind in self.population])
+        return [function(ind) for ind in self.population]
 
     def select_parents(self, fitness_scores):
         if self.selection_method == "Turniejowa":
@@ -70,10 +72,30 @@ class GeneticAlgorithm:
             raise ValueError("Unknown mutation method: " + self.mutation_method)
 
     def evolve(self, function):
+        results = []
+
+        start_time = time.time()
         for generation in range(self.num_generations):
-            fitness_scores = self.evaluate_population()
+            fitness_scores = self.evaluate_population(function)
             self.best_values.append(np.max(fitness_scores))  
+
             parents = self.select_parents(fitness_scores)
             offspring = self.crossover(parents)
             mutated_offspring = self.mutate(offspring)
             self.population = inversion(mutated_offspring, self.inversion_rate)
+
+            results.append({
+                'generation': generation + 1,
+                'best_value': np.max(fitness_scores),
+                'time': time.time() - start_time 
+            })
+        
+        with open('algorithm_results.csv', 'w') as file:
+            file.write("Generation, Best Value, Time\n")
+            for result in results:
+                file.write(f"{result['generation']}, {result['best_value']}, {result['time']}\n")
+
+        end_time = time.time()
+        print(f"Optymalizacja zakończona. Czas obliczeń: {end_time - start_time:.2f} sekundy.")
+
+        return self

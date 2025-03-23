@@ -3,6 +3,7 @@
 import numpy as np
 
 def tournament_selection(population, fitness, tournament_size):
+    fitness = np.array(fitness)
     new_population = []
     for _ in range(len(population)):
         tournament = np.random.choice(len(population), tournament_size, replace=False)

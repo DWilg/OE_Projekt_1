@@ -2,10 +2,13 @@ import tkinter as tk
 from tkinter import ttk, messagebox
 import matplotlib.pyplot as plt
 from algorithms.genetic_algorithm import GeneticAlgorithm
+from optimization.benchmark_functions import Hypersphere
 
 def run_algorithm(population_size, num_generations, mutation_rate, crossover_rate, inversion_rate, selection_method, crossover_method, mutation_method):
+    hypersphere = Hypersphere() 
     def test_function(individual):
-        return sum(individual) # do zaimportowania funkcja z benchmark_functions
+        print("Evaluating individual:", individual)
+        return hypersphere._evaluate(individual)
 
     ga = GeneticAlgorithm(
         population_size=population_size,
