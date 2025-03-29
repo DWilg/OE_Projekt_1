@@ -39,3 +39,16 @@ def uniform_crossover(parents, crossover_rate):
         else:
             offspring.extend([parents[i], parents[i+1]])
     return np.array(offspring)
+
+def granular_crossover(parents, crossover_rate):
+    offspring = []
+    for i in range(0, len(parents), 2):
+        if np.random.rand() < crossover_rate:
+            parent1, parent2 = parents[i], parents[i + 1]
+            mask = np.random.randint(0, 2, size=parent1.shape)
+            child1 = mask * parent1 + (1 - mask) * parent2
+            child2 = mask * parent2 + (1 - mask) * parent1
+            offspring.extend([child1, child2])
+        else:
+            offspring.extend([parents[i], parents[i + 1]])
+    return np.array(offspring)

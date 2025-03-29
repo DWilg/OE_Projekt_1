@@ -1,8 +1,8 @@
 import numpy as np
 import time
 from algorithms.selection import roulette_selection, tournament_selection
-from algorithms.crossover import one_point_crossover, two_point_crossover, uniform_crossover
-from algorithms.mutation import bit_flip_mutation, boundary_mutation
+from algorithms.crossover import granular_crossover, one_point_crossover, two_point_crossover, uniform_crossover
+from algorithms.mutation import bit_flip_mutation, boundary_mutation, two_point_mutation
 from algorithms.inversion import inversion
 
 
@@ -22,7 +22,7 @@ from algorithms.inversion import inversion
 
 
 class GeneticAlgorithm:
-    def __init__(self, population_size, num_generations, mutation_rate, crossover_rate, num_variables, inversion_rate=0.1, selection_method="Turniejowa", crossover_method="Jednopunktowe", mutation_method="Bit Flip"):
+    def __init__(self, population_size, num_generations, mutation_rate, crossover_rate, num_variables, inversion_rate=0.1, selection_method="Turniejowa", crossover_method="Jednopunktowe", mutation_method="Bit Flip", elitism_rate=0.1):
         self.population_size = population_size
         self.num_generations = num_generations
         self.mutation_rate = mutation_rate
@@ -34,6 +34,8 @@ class GeneticAlgorithm:
         self.mutation_method = mutation_method
         self.population = self.initialize_population()
         self.best_values = [] 
+        self.all_fitness_values = []
+        self.elitism_rate = elitism_rate
 
     def fitness(self, individual):
         return sum(individual)
@@ -60,6 +62,8 @@ class GeneticAlgorithm:
             return two_point_crossover(parents, self.crossover_rate)
         elif self.crossover_method == "Jednorodne":
             return uniform_crossover(parents, self.crossover_rate)
+        elif self.crossover_method == "Ziarniste":
+            return granular_crossover(parents, self.crossover_rate)
         else:
             raise ValueError("Unknown crossover method: " + self.crossover_method)
 
@@ -68,6 +72,8 @@ class GeneticAlgorithm:
             return bit_flip_mutation(offspring, self.mutation_rate)
         elif self.mutation_method == "Brzegowa":
             return boundary_mutation(offspring, self.mutation_rate)
+        elif self.mutation_method == "Dwupunktowa":
+            return two_point_mutation(offspring, self.mutation_rate)
         else:
             raise ValueError("Unknown mutation method: " + self.mutation_method)
 
@@ -78,7 +84,12 @@ class GeneticAlgorithm:
         for generation in range(self.num_generations):
             fitness_scores = self.evaluate_population(function)
             self.best_values.append(np.max(fitness_scores))  
-
+            self.all_fitness_values.append(fitness_scores)
+            
+            num_elites = int(self.elitism_rate * self.population_size)
+            elite_indices = np.argsort(fitness_scores)[-num_elites:]
+            elites = self.population[elite_indices]
+            
             parents = self.select_parents(fitness_scores)
             offspring = self.crossover(parents)
             mutated_offspring = self.mutate(offspring)
