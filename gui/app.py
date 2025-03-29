@@ -2,13 +2,24 @@ import tkinter as tk
 from tkinter import ttk, messagebox
 import matplotlib.pyplot as plt
 from algorithms.genetic_algorithm import GeneticAlgorithm
-from optimization.benchmark_functions import Hypersphere
+from optimization.benchmark_functions import \
+    Hypersphere, Rastrigin, \
+    Hyperellipsoid
 
-def run_algorithm(population_size, num_generations, mutation_rate, crossover_rate, inversion_rate, selection_method, crossover_method, mutation_method):
-    hypersphere = Hypersphere() 
+
+def run_algorithm(population_size, num_generations, mutation_rate, crossover_rate, inversion_rate, selection_method, crossover_method, mutation_method, test_function_name):
+    hypersphere = Hypersphere()
+    rastrigin = Rastrigin()
+    hyperellipsoid = Hyperellipsoid()
     def test_function(individual):
+        if test_function_name == "Rastrigin":
+            return rastrigin._evaluate(individual)
+        elif test_function_name == "Hypersphere":
+            return hypersphere._evaluate(individual)
+        elif test_function_name == "Hyperellipsoid":
+            return hyperellipsoid._evaluate(individual)
         print("Evaluating individual:", individual)
-        return hypersphere._evaluate(individual)
+
 
     ga = GeneticAlgorithm(
         population_size=population_size,
@@ -65,7 +76,25 @@ def run_gui():
     inversion_rate_entry = tk.Entry(root)
     inversion_rate_entry.insert(tk.END, "0.1")
     inversion_rate_entry.pack()
-    
+
+    tk.Label(root,
+             text="Wybierz funkcję testową:").pack()
+    test_function = tk.StringVar(
+        value="Hypersphere")
+
+    tk.Radiobutton(root,
+                   text="Rastrigin",
+                   variable=test_function,
+                   value="Rastrigin").pack()
+    tk.Radiobutton(root,
+                   text="Hypersphere",
+                   variable=test_function,
+                   value="Hypersphere").pack()
+    tk.Radiobutton(root,
+                   text="Hyperellipsoid",
+                   variable=test_function,
+                   value="Hyperellipsoid").pack()
+
     tk.Label(root, text="Metoda selekcji:").pack()
     selection_method = ttk.Combobox(root, values=["Turniejowa", "Koło ruletki"])
     selection_method.set("Turniejowa")
@@ -90,8 +119,9 @@ def run_gui():
         selected_selection_method = selection_method.get()
         selected_crossover_method = crossover_method.get()
         selected_mutation_method = mutation_method.get()
+        selected_test_function = test_function.get()
         global ga
-        ga = run_algorithm(population_size, num_generations, mutation_rate, crossover_rate, inversion_rate, selected_selection_method, selected_crossover_method, selected_mutation_method)
+        ga = run_algorithm(population_size, num_generations, mutation_rate, crossover_rate, inversion_rate, selected_selection_method, selected_crossover_method, selected_mutation_method, selected_test_function)
         plot_results(ga)
     
     btn = tk.Button(root, text="Start", command=start_algorithm)
