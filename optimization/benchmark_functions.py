@@ -352,15 +352,15 @@ class Hypersphere(BenchmarkFunction):
 # '''
 # Continuous, convex and unimodal.
 # '''
-# class Hyperellipsoid(BenchmarkFunction): # rotated hyperellipsoid
-# 	def __init__(self, n_dimensions=2, opposite=False):
-# 		super().__init__("Hyperellipsoid", n_dimensions, opposite)
-# 	def _evaluate(self,point):
-# 		ret = 0.0
-# 		for i in range(self._n_dimensions):
-# 			for j in range(i+1):
-# 				ret += pow(point[j],2)
-# 		return ret
+class Hyperellipsoid(BenchmarkFunction): # rotated hyperellipsoid
+	def __init__(self, n_dimensions=2, opposite=False):
+		super().__init__("Hyperellipsoid", n_dimensions, opposite)
+	def _evaluate(self,point):
+		ret = 0.0
+		for i in range(self._n_dimensions):
+			for j in range(i+1):
+				ret += pow(point[j],2)
+		return ret
 
 # '''
 # Continuous, non-convex and multimodal.
@@ -378,16 +378,16 @@ class Hypersphere(BenchmarkFunction):
 # Continuous, non-convex and (highly) multimodal. 
 # Location of the minima are regularly distributed.
 # '''
-# class Rastrigin(BenchmarkFunction):
-# 	def __init__(self, n_dimensions=2, opposite=False):
-# 		super().__init__("Rastrigin", n_dimensions, opposite)
-# 	def _evaluate(self,point):
-# 		ret = sum([pow(p,2) - 10.0*math.cos(2.0*math.pi*p) for p in point]) + 10.0*len(point)
-# 		return ret
-# 	# def _evaluate_derivative(self, point):
-# 	# 	return sum([2.0*p + 20.0*math.pi*math.sin(2.0*math.pi*p) for p in point])
-# 	# def _evaluate_second_derivative(self, point):
-# 	# 	return sum([2.0 + 40.0*pow(math.pi,2)*math.cos(2.0*math.pi*p) for p in point])
+class Rastrigin(BenchmarkFunction):
+	def __init__(self, n_dimensions=2, opposite=False):
+		super().__init__("Rastrigin", n_dimensions, opposite)
+	def _evaluate(self,point):
+		ret = sum([pow(p,2) - 10.0*math.cos(2.0*math.pi*p) for p in point]) + 10.0*len(point)
+		return ret
+	# def _evaluate_derivative(self, point):
+	# 	return sum([2.0*p + 20.0*math.pi*math.sin(2.0*math.pi*p) for p in point])
+	# def _evaluate_second_derivative(self, point):
+	# 	return sum([2.0 + 40.0*pow(math.pi,2)*math.cos(2.0*math.pi*p) for p in point])
 
 # '''
 # Continuous, non-convex and (highly) multimodal. 
