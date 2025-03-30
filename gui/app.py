@@ -133,28 +133,52 @@ def run_gui():
     mutation_method.pack()
     
     def start_algorithm():
-        population_size = int(population_size_entry.get())
-        num_generations = int(num_generations_entry.get())
-        num_variables = int(num_variables_entry.get())
-        mutation_rate = float(mutation_rate_entry.get())
-        crossover_rate = float(crossover_rate_entry.get())
-        inversion_rate = float(inversion_rate_entry.get())
-        selected_selection_method = selection_method.get()
-        selected_crossover_method = crossover_method.get()
-        selected_mutation_method = mutation_method.get()
-        selected_test_function = test_function.get()
-        global ga
-        ga = run_algorithm(population_size, num_generations, mutation_rate, crossover_rate, inversion_rate, selected_selection_method, selected_crossover_method, selected_mutation_method, selected_test_function, num_variables)
-        plot_results(ga)
-        save_to_database.save_results_to_db(ga)
+        try:
+            population_size = int(population_size_entry.get())
+            if population_size <= 0:
+                raise ValueError("Rozmiar populacji musi być liczbą całkowitą większą od 0.")
+
+            num_generations = int(num_generations_entry.get())
+            if num_generations <= 0:
+                raise ValueError("Liczba generacji musi być liczbą całkowitą większą od 0.")
+
+            num_variables = int(num_variables_entry.get())
+            if num_variables <= 0:
+                raise ValueError("Liczba zmiennych musi być liczbą całkowitą większą od 0.")
+
+            mutation_rate = float(mutation_rate_entry.get())
+            if not (0 <= mutation_rate <= 1):
+                raise ValueError("Prawdopodobieństwo mutacji musi być liczbą z zakresu [0, 1].")
+
+            crossover_rate = float(crossover_rate_entry.get())
+            if not (0 <= crossover_rate <= 1):
+                raise ValueError("Prawdopodobieństwo krzyżowania musi być liczbą z zakresu [0, 1].")
+
+            inversion_rate = float(inversion_rate_entry.get())
+            if not (0 <= inversion_rate <= 1):
+                raise ValueError("Prawdopodobieństwo inwersji musi być liczbą z zakresu [0, 1].")
+            selected_selection_method = selection_method.get()
+            selected_crossover_method = crossover_method.get()
+            selected_mutation_method = mutation_method.get()
+            selected_test_function = test_function.get()
+            global ga
+            ga = run_algorithm(population_size, num_generations, mutation_rate, crossover_rate, inversion_rate, selected_selection_method, selected_crossover_method, selected_mutation_method, selected_test_function, num_variables)
+            plot_results(ga)
+            save_to_database.save_results_to_db(ga)
     
-    btn = tk.Button(root, text="Start", command=start_algorithm)
+
+            
+        except ValueError as e:
+            messagebox.showerror("Błąd danych wejściowych", str(e))
+        except Exception as e:
+            messagebox.showerror("Błąd", f"Wystąpił nieoczekiwany błąd: {str(e)}")
+            
+    btn = tk.Button(root, text="Start", command=start_algorithm)           
     btn.pack()
     
     plot_btn = tk.Button(root, text="Pokaż wykres", command=lambda: plot_results(ga))
     plot_btn.pack()
 
     root.mainloop()
-
 if __name__ == "__main__":
     run_gui()
