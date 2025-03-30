@@ -1,3 +1,4 @@
+import os
 import time
 import numpy as np
 import matplotlib.pyplot as plt
@@ -8,6 +9,8 @@ from optimization.benchmark_functions import Rastrigin
 # Wykresy przedstawiające średnie wartości funkcji celu oraz czas wykonania
 # dla każdej konfiguracji
 def compare_configurations():
+    if not os.path.exists('results'):
+        os.makedirs('results')
     configurations = [
         {
             "name": "Konfiguracja bazowa",
@@ -116,8 +119,9 @@ def compare_configurations():
             "std_time": std_time,
             "all_values": config_best_values
         })
-    
-    with open("comparison_results.csv", "w", encoding='utf-8') as f:
+        
+    csv_path = os.path.join('results', "comparison_results.csv")
+    with open(csv_path, "w", encoding='utf-8') as f:
         f.write("Konfiguracja,Średnia wartość,Najlepsza wartość,Najgorsza wartość,Średni czas [s],Odchylenie czasu [s]\n")
         for res in results:
             f.write(f"{res['config_name']},{res['mean_value']:.4f},{res['best_value']:.4f},{res['worst_value']:.4f},{res['mean_time']:.4f},{res['std_time']:.4f}\n")
@@ -166,7 +170,9 @@ def compare_configurations():
     plt.legend(fontsize=9)
     
     plt.tight_layout()
-    plt.savefig("comparison_results.png", dpi=300, bbox_inches='tight')
+        
+    plot_path = os.path.join('results', 'comparison_results.png')
+    plt.savefig(plot_path, dpi=300, bbox_inches='tight')
     plt.show()  
     
     plt.figure(figsize=(10, 6))

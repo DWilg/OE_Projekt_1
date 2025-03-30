@@ -1,3 +1,4 @@
+import os
 import numpy as np
 import time
 from algorithms.selection import roulette_selection, tournament_selection
@@ -78,6 +79,10 @@ class GeneticAlgorithm:
             raise ValueError("Unknown mutation method: " + self.mutation_method)
 
     def evolve(self, function):
+        
+        if not os.path.exists('results'):
+            os.makedirs('results')
+            
         results = []
 
         start_time = time.time()
@@ -101,7 +106,10 @@ class GeneticAlgorithm:
                 'time': time.time() - start_time 
             })
         
-        with open('algorithm_results.csv', 'w') as file:
+        
+        csv_path = os.path.join('results', 'algorithm_results.csv')
+
+        with open(csv_path, 'w') as file:
             file.write("Generation, Best Value, Time\n")
             for result in results:
                 file.write(f"{result['generation']}, {result['best_value']}, {result['time']}\n")

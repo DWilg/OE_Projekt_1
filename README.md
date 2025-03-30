@@ -1,3 +1,4 @@
-Implementacja klasycznego algorytmu genetycznego 
-To do: 
-- dodać pseudokod z książki 'Algorytmy genetyczne', na podstawie pseudokodu będzie łatwiejsza implementacja
+Implementacja klasycznego algorytmu genetycznego
+To do:
+
+- Nagrać filmik, oraz uzupełnić i dokończyć sprawozdania posprawdzać zgodność aplikacji z wymaganiami

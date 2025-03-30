@@ -1,5 +1,0 @@
-Konfiguracja,Średnia wartość,Najlepsza wartość,Najgorsza wartość,Średni czas [s],Odchylenie czasu [s]
-Konfiguracja bazowa,8.5000,8.0000,9.0000,0.4243,0.1237
-Wysoka mutacja,8.2000,8.0000,9.0000,0.4046,0.0180
-Krzyżowanie dwupunktowe,8.0000,7.0000,9.0000,0.4462,0.0340
-Koło ruletki + niska mutacja,8.3000,8.0000,9.0000,0.3330,0.0154
