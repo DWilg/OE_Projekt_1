@@ -23,7 +23,7 @@ from algorithms.inversion import inversion
 
 
 class GeneticAlgorithm:
-    def __init__(self, population_size, num_generations, mutation_rate, crossover_rate, num_variables, inversion_rate=0.1, selection_method="Turniejowa", crossover_method="Jednopunktowe", mutation_method="Bit Flip", elitism_rate=0.1):
+    def __init__(self, population_size, num_generations, mutation_rate, crossover_rate, num_variables, inversion_rate=0.1, selection_method="Turniejowa", crossover_method="Jednopunktowe", mutation_method="Bit Flip", elitism_rate=0.01):
         self.population_size = population_size
         self.num_generations = num_generations
         self.mutation_rate = mutation_rate
@@ -39,14 +39,14 @@ class GeneticAlgorithm:
         self.elitism_rate = elitism_rate
 
     def fitness(self, individual):
-        return sum(individual)
+        return 1.0/individual
     
     def initialize_population(self):
-        return np.random.randint(2, size=(self.population_size, self.num_variables))
+        return np.random.uniform(low=0.1, high=1.0, size=(self.population_size, self.num_variables))
 
     def evaluate_population(self, function):
-        # return np.array([self.fitness(ind) for ind in self.population])
-        return [function(ind) for ind in self.population]
+        return np.array([self.fitness(ind) for ind in self.population])
+        # return [function(ind) for ind in self.population]
 
     def select_parents(self, fitness_scores):
         if self.selection_method == "Turniejowa":
@@ -88,21 +88,23 @@ class GeneticAlgorithm:
         start_time = time.time()
         for generation in range(self.num_generations):
             fitness_scores = self.evaluate_population(function)
-            self.best_values.append(np.max(fitness_scores))  
+            self.best_values.append(np.min(fitness_scores))  
             self.all_fitness_values.append(fitness_scores)
             
             num_elites = int(self.elitism_rate * self.population_size)
             elite_indices = np.argsort(fitness_scores)[-num_elites:]
+            print("Fitness scores:", fitness_scores[elite_indices])
+            
             elites = self.population[elite_indices]
             
             parents = self.select_parents(fitness_scores)
             offspring = self.crossover(parents)
             mutated_offspring = self.mutate(offspring)
-            self.population = inversion(mutated_offspring, self.inversion_rate)
-
+            self.population =  inversion(mutated_offspring, self.inversion_rate)
+            self.population = elites + self.population 
             results.append({
                 'generation': generation + 1,
-                'best_value': np.max(fitness_scores),
+                'best_value': np.min(fitness_scores),
                 'time': time.time() - start_time 
             })
         
