@@ -7,10 +7,12 @@ from optimization.benchmark_functions import \
     Hyperellipsoid
 import numpy as np
 from utils import save_to_database
-def run_algorithm(population_size, num_generations, mutation_rate, crossover_rate, inversion_rate, selection_method, crossover_method, mutation_method, test_function_name, num_variables):
-    hypersphere = Hypersphere()
-    rastrigin = Rastrigin()
-    hyperellipsoid = Hyperellipsoid()
+def run_algorithm(population_size, num_generations, mutation_rate, crossover_rate, inversion_rate,
+                  selection_method, crossover_method, mutation_method, test_function_name,
+                  num_variables, optimization_goal):
+    hypersphere = Hypersphere(opposite=False)
+    rastrigin = Rastrigin(opposite=False)
+    hyperellipsoid = Hyperellipsoid(opposite=False)
     def test_function(individual):
         if test_function_name == "Rastrigin":
             return rastrigin._evaluate(individual)
@@ -30,18 +32,20 @@ def run_algorithm(population_size, num_generations, mutation_rate, crossover_rat
         inversion_rate=inversion_rate,
         selection_method=selection_method,
         crossover_method=crossover_method,
-        mutation_method=mutation_method
+        mutation_method=mutation_method,
+        optimization_goal=optimization_goal
     )
-    
-    ga.evolve(test_function)  
+
+
+    ga.evolve(test_function)
     messagebox.showinfo("Info", "Optymalizacja zakończona")
     return ga
 
 def plot_results(ga):
     generations = list(range(1, ga.num_generations + 1))
-    best_values = ga.best_values  
-    
-    all_fitness_values = ga.all_fitness_values 
+    best_values = ga.best_values
+
+    all_fitness_values = ga.all_fitness_values
 
     mean_values = [np.mean(fitness) for fitness in all_fitness_values]
     std_deviation = [np.std(fitness) for fitness in all_fitness_values]
@@ -88,7 +92,7 @@ def run_gui():
     crossover_rate_entry = tk.Entry(root)
     crossover_rate_entry.insert(tk.END, "0.8")
     crossover_rate_entry.pack()
-    
+
     tk.Label(root, text="Prawdopodobieństwo inwersji:").pack()
     inversion_rate_entry = tk.Entry(root)
     inversion_rate_entry.insert(tk.END, "0.1")
@@ -96,8 +100,14 @@ def run_gui():
 
     tk.Label(root, text="Liczba zmiennych:").pack()
     num_variables_entry = tk.Entry(root)
-    num_variables_entry.insert(tk.END, "10") 
+    num_variables_entry.insert(tk.END, "10")
     num_variables_entry.pack()
+
+    tk.Label(root, text="Cel optymalizacji:").pack()
+    optimization_goal = ttk.Combobox(root, values=["min", "max"])
+    optimization_goal.set("min")
+    optimization_goal.pack()
+
 
     tk.Label(root,
              text="Wybierz funkcję testową:").pack()
@@ -121,17 +131,17 @@ def run_gui():
     selection_method = ttk.Combobox(root, values=["Turniejowa", "Koło ruletki"])
     selection_method.set("Turniejowa")
     selection_method.pack()
-    
+
     tk.Label(root, text="Metoda krzyżowania:").pack()
     crossover_method = ttk.Combobox(root, values=["Jednopunktowe", "Dwupunktowe", "Jednorodne", "Ziarniste"])
     crossover_method.set("Jednopunktowe")
     crossover_method.pack()
-    
+
     tk.Label(root, text="Metoda mutacji:").pack()
     mutation_method = ttk.Combobox(root, values=["Bit Flip", "Brzegowa", "Dwupunktowa"])
     mutation_method.set("Bit Flip")
     mutation_method.pack()
-    
+
     def start_algorithm():
         try:
             population_size = int(population_size_entry.get())
@@ -161,21 +171,26 @@ def run_gui():
             selected_crossover_method = crossover_method.get()
             selected_mutation_method = mutation_method.get()
             selected_test_function = test_function.get()
+            selected_optimization_goal = optimization_goal.get()
             global ga
-            ga = run_algorithm(population_size, num_generations, mutation_rate, crossover_rate, inversion_rate, selected_selection_method, selected_crossover_method, selected_mutation_method, selected_test_function, num_variables)
+            ga = run_algorithm(
+                population_size, num_generations, mutation_rate, crossover_rate, inversion_rate,
+                selected_selection_method, selected_crossover_method, selected_mutation_method,
+                selected_test_function, num_variables, selected_optimization_goal
+            )
             plot_results(ga)
             save_to_database.save_results_to_db(ga)
-    
 
-            
+
+
         except ValueError as e:
             messagebox.showerror("Błąd danych wejściowych", str(e))
         except Exception as e:
             messagebox.showerror("Błąd", f"Wystąpił nieoczekiwany błąd: {str(e)}")
-            
-    btn = tk.Button(root, text="Start", command=start_algorithm)           
+
+    btn = tk.Button(root, text="Start", command=start_algorithm)
     btn.pack()
-    
+
     plot_btn = tk.Button(root, text="Pokaż wykres", command=lambda: plot_results(ga))
     plot_btn.pack()
 
