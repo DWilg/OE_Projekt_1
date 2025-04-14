@@ -32,7 +32,9 @@ class GeneticAlgorithm:
             crossover_method="Jednopunktowe",
             mutation_method="Bit Flip",
             elitism_rate=0.01,
-            optimization_goal="min"  # "min" or "max"
+            optimization_goal="min",  # "min" or "max"
+            precision=10,
+            variable_range=(-5.12,5.12)
     ):
         self.population_size = population_size
         self.num_generations = num_generations
@@ -45,15 +47,38 @@ class GeneticAlgorithm:
         self.mutation_method = mutation_method
         self.elitism_rate = elitism_rate
         self.optimization_goal = optimization_goal.lower()
+        self.precision = precision
+        self.variable_range = variable_range
         self.population = self.initialize_population()
         self.best_values = []
         self.all_fitness_values = []
 
     def initialize_population(self):
-        return np.random.uniform(low=0.1, high=1.0, size=(self.population_size, self.num_variables))
+        # Liczba bitów 
+        chromosome_length = self.num_variables * self.precision
+        # Generowanie populacji binarnej
+        return np.random.randint(2, size=(self.population_size, chromosome_length))
+    def decode_chromosome(self, chromosome):
+        # Dekodowanie chromosomu binarnego na wartości rzeczywiste
+        decoded = []
+        bits_per_variable = self.precision
+        lower, upper = self.variable_range
+
+        for i in range(self.num_variables):
+            # Wyodrębnienie fragmentu chromosomu dla jednej zmiennej
+            start = i * bits_per_variable
+            end = start + bits_per_variable
+            binary_value = chromosome[start:end]
+            # Konwersja binarna -> dziesiętna
+            decimal_value = int("".join(map(str, binary_value)), 2)
+            # Skalowanie do zakresu [lower, upper]
+            real_value = lower + (decimal_value / (2**bits_per_variable - 1)) * (upper - lower)
+            decoded.append(real_value)
+
+        return np.array(decoded)
 
     def evaluate_population(self, function):
-        return np.array([function(ind) for ind in self.population])
+        return np.array([function(self.decode_chromosome(ind)) for ind in self.population])
 
     def select_parents(self, fitness_scores):
         if self.selection_method == "Turniejowa":
